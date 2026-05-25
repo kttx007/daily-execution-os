@@ -1,6 +1,7 @@
 export type Quadrant = 'Q1' | 'Q2' | 'Q3' | 'Q4';
 export type Priority = 'P0' | 'P1' | 'P2' | 'P3';
 export type Level = '高' | '中' | '低';
+export type Category = 'Work' | 'Life' | 'Growth' | 'Health';
 export type TaskStatus = '未开始' | '进行中' | '已完成' | '延期' | '放弃';
 
 export interface Task {
@@ -8,9 +9,9 @@ export interface Task {
   user_id: string;
   title: string;
   project?: string;
-  category?: string;
-  quadrant?: Quadrant;
-  priority?: Priority;
+  category: Category;
+  quadrant: Quadrant;
+  priority: Priority;
   importance?: Level;
   urgency?: Level;
   estimated_time?: number;

@@ -36,6 +36,19 @@ export class LocalStorageProvider implements StorageProvider {
     this.setItem(KEYS.TASKS, tasks);
   }
 
+  async updateTask(id: string, updates: Partial<Task>): Promise<void> {
+    const tasks = await this.getTasks();
+    const index = tasks.findIndex((t) => t.id === id);
+    if (index > -1) {
+      tasks[index] = { 
+        ...tasks[index], 
+        ...updates, 
+        updated_at: new Date().toISOString() 
+      };
+      this.setItem(KEYS.TASKS, tasks);
+    }
+  }
+
   async deleteTask(id: string): Promise<void> {
     const tasks = await this.getTasks();
     this.setItem(KEYS.TASKS, tasks.filter((t) => t.id !== id));

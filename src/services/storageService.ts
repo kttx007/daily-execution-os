@@ -3,6 +3,7 @@ import type { Task, InboxItem, WeeklyTask, RecurringTask, OutputLog, DailyReview
 export interface StorageProvider {
   getTasks(): Promise<Task[]>;
   saveTask(task: Task): Promise<void>;
+  updateTask(id: string, task: Partial<Task>): Promise<void>;
   deleteTask(id: string): Promise<void>;
 
   getInboxItems(): Promise<InboxItem[]>;

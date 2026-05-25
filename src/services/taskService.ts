@@ -1,30 +1,48 @@
-import { Task, TaskStatus, Quadrant, Priority, Level, OutputLog } from '../types';
+import { Task, TaskStatus, Quadrant, Priority, Level, OutputLog, Category } from '../types';
 import { localProvider } from './localStorage';
+import { FeishuService } from './feishuService';
 
 export class TaskService {
-  static async completeTask(task: Task): Promise<void> {
+  static async completeTask(taskId: string): Promise<void> {
+    const tasks = await localProvider.getTasks();
+    const task = tasks.find(t => t.id === taskId);
+    if (!task) return;
+
     const completedTask: Task = {
       ...task,
-      status: '已完成' as TaskStatus,
+      status: '已完成',
       completed_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     };
 
-    await localProvider.saveTask(completedTask);
+    await localProvider.updateTask(taskId, completedTask);
 
-    // 自动创建输出日志
+    // 自动创建输出日志并同步到飞书
+    const outputData = {
+      taskName: task.title,
+      date: new Date().toISOString().split('T')[0],
+      category: task.category,
+      priority: task.priority,
+      duration: task.estimated_time || 0,
+      sopLink: task.output_link,
+      status: 'Completed' as const
+    };
+
+    // 背景同步 (不阻塞主流程)
+    FeishuService.exportToBitable(outputData);
+
     const outputLog: OutputLog = {
       id: crypto.randomUUID(),
       user_id: task.user_id,
       task_id: task.id,
-      completed_date: new Date().toISOString().split('T')[0],
+      completed_date: outputData.date,
       title: task.title,
       project: task.project,
       category: task.category,
       output_link: task.output_link,
       reusable: false,
       sop_candidate: false,
-      value_level: '中' as Level,
+      value_level: '中',
       created_at: new Date().toISOString(),
     };
 
@@ -42,20 +60,32 @@ export class TaskService {
       ...task,
       plan_date: tomorrow.toISOString().split('T')[0],
       delay_count: delayCount,
-      status: '延期' as TaskStatus,
+      status: '延期',
       is_stuck: isStuck,
       updated_at: new Date().toISOString(),
     };
 
-    await localProvider.saveTask(updatedTask);
+    await localProvider.updateTask(task.id, updatedTask);
+    
+    // 顺延也同步到 Bitable 记录状态
+    FeishuService.exportToBitable({
+      taskName: task.title,
+      date: new Date().toISOString().split('T')[0],
+      category: task.category,
+      priority: task.priority,
+      status: 'Rolled-over'
+    });
   }
 
-  static async createTask(title: string, userId: string, overrides?: Partial<Task>): Promise<Task> {
+  static async createTask(title: string, priority: Priority, quadrant: Quadrant, category: Category, overrides?: Partial<Task>): Promise<Task> {
     const newTask: Task = {
       id: crypto.randomUUID(),
-      user_id: userId,
+      user_id: 'default_user', // 暂时硬编码
       title,
-      status: '未开始' as TaskStatus,
+      priority,
+      quadrant,
+      category,
+      status: '未开始',
       delay_count: 0,
       auto_rollover: true,
       is_stuck: false,
@@ -66,6 +96,10 @@ export class TaskService {
     };
 
     await localProvider.saveTask(newTask);
+
+    // 创建时同步到飞书日历
+    FeishuService.syncToCalendar(newTask.title, newTask.plan_date, newTask.due_time);
+
     return newTask;
   }
 }
