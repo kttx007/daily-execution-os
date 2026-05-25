@@ -32,16 +32,15 @@ const App: React.FC = () => {
 
 
   return (
-    <div className="flex h-screen bg-background overflow-hidden">
-      <Sidebar currentPath={currentPath} onNavigate={setCurrentPath} />
-      <main className="flex-1 flex flex-col overflow-hidden pb-16 md:pb-0">
-        <div className="flex-1 overflow-y-auto p-4 md:p-8">
-          {renderPage()}
-        </div>
+    <div className="flex min-h-screen bg-background text-foreground overflow-hidden">
+      <Sidebar currentPath={currentPath} />
+      <main className="flex-1 overflow-y-auto p-4 md:p-8 pb-24 md:pb-8">
+        {renderPage()}
       </main>
-      <MobileNav currentPath={currentPath} onNavigate={setCurrentPath} />
+      <MobileNav currentPath={currentPath} />
     </div>
   );
 };
+
 
 export default App;

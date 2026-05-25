@@ -47,8 +47,10 @@ export interface WeeklyTask {
   project?: string;
   goal?: string;
   priority?: string;
-  progress: number;
+  progress?: number;
   status: string;
+  week_number?: number;
+  year?: number;
   start_date?: string;
   end_date?: string;
   note?: string;
@@ -90,12 +92,14 @@ export interface DailyReview {
   id: string;
   user_id: string;
   date: string;
+  summary?: string;
   completed_summary?: string;
   unfinished_summary?: string;
   reason?: string;
   rollover_tasks?: string;
   outputs?: string;
   score?: number;
+  top_learnings?: string[];
   tomorrow_top3?: string;
   note?: string;
   created_at: string;
