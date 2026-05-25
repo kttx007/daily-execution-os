@@ -1,41 +1,21 @@
 import React from 'react';
-import { LayoutDashboard, Inbox, Calendar, Grid3X3, ListChecks, Repeat, FileText, BarChart3, Settings } from 'lucide-react';
+import { LayoutDashboard, Inbox, Calendar, Grid3X3, ListChecks, Repeat, FileText, BarChart3, Settings, Target, ClipboardCheck } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-interface NavItemProps {
-  icon: React.ElementType;
-  label: string;
-  active?: boolean;
-  onClick: () => void;
-  collapsed?: boolean;
-}
-
-const NavItem = ({ icon: Icon, label, active, onClick, collapsed }: NavItemProps) => (
-  <button
-    onClick={onClick}
-    className={cn(
-      "flex items-center w-full p-3 rounded-lg transition-colors",
-      active ? "bg-primary text-primary-foreground" : "hover:bg-accent hover:text-accent-foreground text-muted-foreground",
-      collapsed ? "justify-center" : "space-x-3"
-    )}
-  >
-    <Icon size={20} />
-    {!collapsed && <span className="font-medium">{label}</span>}
-  </button>
-);
-
-export const Sidebar = ({ currentPath, onNavigate }: { currentPath: string; onNavigate: (path: string) => void }) => {
+export const Sidebar = () => {
   const navItems = [
-    { path: 'dashboard', label: '首页驾驶舱', icon: LayoutDashboard },
-    { path: 'inbox', label: '任务收集箱', icon: Inbox },
-    { path: 'today', label: '今日任务', icon: Calendar },
-    { path: 'matrix', label: '四象限', icon: Grid3X3 },
-    { path: 'weekly', label: '周任务', icon: ListChecks },
-    { path: 'recurring', label: '重复任务', icon: Repeat },
-    { path: 'output', label: '完成记录', icon: FileText },
-    { path: 'review', label: '每日复盘', icon: BarChart3 },
-    { path: 'settings', label: '设置', icon: Settings },
+    { icon: LayoutDashboard, label: '执行驾驶舱', href: '#/' },
+    { icon: Inbox, label: '收集箱', href: '#/inbox' },
+    { icon: Calendar, label: '今日执行', href: '#/today' },
+    { icon: Grid3X3, label: '四象限矩阵', href: '#/matrix' },
+    { icon: Target, label: '本周目标', href: '#/weekly' },
+    { icon: ClipboardCheck, label: '今日复盘', href: '#/review' },
+    { icon: ListChecks, label: '任务清单', href: '#/tasks' },
+    { icon: Repeat, label: '定期重复', href: '#/recurring' },
+    { icon: FileText, label: '输出日志', href: '#/logs' },
+    { icon: BarChart3, label: '执行分析', href: '#/analytics' },
   ];
+
 
   return (
     <div className="hidden md:flex flex-col h-screen w-64 border-r bg-card p-4 space-y-2">

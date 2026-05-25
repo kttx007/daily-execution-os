@@ -5,28 +5,31 @@ import Inbox from './pages/Inbox';
 import Today from './pages/Today';
 import Matrix from './pages/Matrix';
 import Weekly from './pages/Weekly';
-import Recurring from './pages/Recurring';
-import OutputLog from './pages/OutputLog';
 import Review from './pages/Review';
-import Settings from './pages/Settings';
+import Logs from './pages/Logs';
 
 const App: React.FC = () => {
-  const [currentPath, setCurrentPath] = useState('dashboard');
+  const [currentPath, setCurrentPath] = useState(window.location.hash || '#/');
+
+  useEffect(() => {
+    const handleHashChange = () => setCurrentPath(window.location.hash || '#/');
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
 
   const renderPage = () => {
     switch (currentPath) {
-      case 'dashboard': return <Dashboard />;
-      case 'inbox': return <Inbox />;
-      case 'today': return <Today />;
-      case 'matrix': return <Matrix />;
-      case 'weekly': return <Weekly />;
-      case 'recurring': return <Recurring />;
-      case 'output': return <OutputLog />;
-      case 'review': return <Review />;
-      case 'settings': return <Settings />;
+      case '#/': return <Dashboard />;
+      case '#/inbox': return <Inbox />;
+      case '#/today': return <Today />;
+      case '#/matrix': return <Matrix />;
+      case '#/weekly': return <Weekly />;
+      case '#/review': return <Review />;
+      case '#/logs': return <Logs />;
       default: return <Dashboard />;
     }
   };
+
 
   return (
     <div className="flex h-screen bg-background overflow-hidden">
