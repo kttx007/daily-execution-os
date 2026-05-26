@@ -18,16 +18,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(500).json({ error: 'Feishu credentials not configured' });
   }
 
+  if (req.method === 'GET') {
+    return res.status(200).json({ status: 'healthy' });
+  }
+
   const path = req.url?.split('/').pop();
 
   // 处理飞书 Webhook 事件转发
-  if (req.method === 'POST' && req.body.type === 'url_verification') {
+  if (req.method === 'POST' && req.body?.type === 'url_verification') {
     return res.status(200).json({ challenge: req.body.challenge });
   }
 
   try {
     // 飞书消息事件监听 -> 写入 Inbox
-    if (req.body.header?.event_type === 'im.message.receive_v1') {
+    if (req.body?.header?.event_type === 'im.message.receive_v1') {
       const { message } = req.body.event;
       const content = JSON.parse(message.content).text;
 
