@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
-import { localProvider } from '@/services/localStorage';
+import { storage } from '@/services/storageService';
 import { OutputLog } from '@/types';
 import { FileText, ExternalLink, Share2, Copy, BookOpen } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -9,7 +9,7 @@ const Logs: React.FC = () => {
   const [logs, setLogs] = useState<OutputLog[]>([]);
 
   const loadLogs = async () => {
-    const allLogs = await localProvider.getOutputLogs();
+    const allLogs = await storage.getOutputLogs();
     setLogs(allLogs.sort((a, b) => new Date(b.completed_date).getTime() - new Date(a.completed_date).getTime()));
   };
 

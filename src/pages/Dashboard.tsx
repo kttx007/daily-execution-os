@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { ArrowUpRight, CheckCircle2, Clock, AlertCircle, Plus, LayoutGrid, Zap } from 'lucide-react';
-import { localProvider } from '@/services/localStorage';
+import { storage } from '@/services/storageService';
 import { Task, OutputLog } from '@/types';
 import { cn } from '@/lib/utils';
 import TaskModal from '@/components/tasks/TaskModal';
@@ -13,9 +13,10 @@ const Dashboard: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const loadData = async () => {
+    await TaskService.autoRolloverTasks();
     const [allTasks, allLogs] = await Promise.all([
-      localProvider.getTasks(),
-      localProvider.getOutputLogs()
+      storage.getTasks(),
+      storage.getOutputLogs()
     ]);
     setTasks(allTasks);
     setLogs(allLogs);
@@ -60,20 +61,24 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
-      <header className="flex justify-between items-end">
+      <header className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">执行驾驶舱</h1>
-          <p className="text-muted-foreground mt-1">
-            你好，安平。今日已完成 {completedToday.length} 项任务，执行复利持续增长中。
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">执行驾驶舱</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            你好，安平。今日已完成 {completedToday.length} 项任务。
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          <div className="hidden xs:flex items-center gap-2 px-3 py-1 bg-green-500/10 border border-green-500/20 rounded-full">
+            <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
+            <span className="text-[10px] font-bold text-green-600 uppercase">Gateway Active</span>
+          </div>
           <button 
             onClick={() => setIsModalOpen(true)}
-            className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-xl font-bold hover:scale-105 transition-all shadow-lg"
+            className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-xl font-bold hover:scale-105 transition-all shadow-lg"
           >
             <Plus size={18} />
-            新任务
+            <span>新任务</span>
           </button>
         </div>
       </header>

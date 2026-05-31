@@ -1,10 +1,10 @@
 import { Task, TaskStatus, Quadrant, Priority, Level, OutputLog, Category } from '../types';
-import { localProvider } from './localStorage';
+import { storage } from './storageService';
 import { FeishuService } from './feishuService';
 
 export class TaskService {
   static async completeTask(taskId: string): Promise<void> {
-    const tasks = await localProvider.getTasks();
+    const tasks = await storage.getTasks();
     const task = tasks.find(t => t.id === taskId);
     if (!task) return;
 
@@ -15,7 +15,7 @@ export class TaskService {
       updated_at: new Date().toISOString(),
     };
 
-    await localProvider.updateTask(taskId, completedTask);
+    await storage.updateTask(taskId, completedTask);
 
     // 自动创建输出日志并同步到飞书
     const outputData = {
@@ -46,7 +46,30 @@ export class TaskService {
       created_at: new Date().toISOString(),
     };
 
-    await localProvider.saveOutputLog(outputLog);
+    await storage.saveOutputLog(outputLog);
+  }
+
+  static async autoRolloverTasks(): Promise<void> {
+    const tasks = await storage.getTasks();
+    const today = new Date().toISOString().split('T')[0];
+    
+    const overdueTasks = tasks.filter(t => 
+      t.status !== '已完成' && 
+      t.plan_date < today
+    );
+
+    for (const task of overdueTasks) {
+      const delayCount = (task.delay_count || 0) + 1;
+      const updatedTask: Task = {
+        ...task,
+        plan_date: today,
+        delay_count: delayCount,
+        status: '延期',
+        is_stuck: delayCount >= 3,
+        updated_at: new Date().toISOString(),
+      };
+      await storage.updateTask(task.id, updatedTask);
+    }
   }
 
   static async rolloverTask(task: Task): Promise<void> {
@@ -65,7 +88,7 @@ export class TaskService {
       updated_at: new Date().toISOString(),
     };
 
-    await localProvider.updateTask(task.id, updatedTask);
+    await storage.updateTask(task.id, updatedTask);
     
     // 顺延也同步到 Bitable 记录状态
     FeishuService.exportToBitable({
@@ -95,7 +118,7 @@ export class TaskService {
       ...overrides,
     };
 
-    await localProvider.saveTask(newTask);
+    await storage.saveTask(newTask);
 
     // 创建时同步到飞书日历
     FeishuService.syncToCalendar(newTask.title, newTask.plan_date, newTask.due_time);

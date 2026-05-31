@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Plus, Search, Filter, ArrowRight, MoreVertical } from 'lucide-react';
-import { localProvider } from '@/services/localStorage';
+import { storage } from '@/services/storageService';
 import { TaskService } from '@/services/taskService';
 import { InboxItem, Task } from '@/types';
 import TaskModal from '@/components/tasks/TaskModal';
@@ -12,7 +12,7 @@ const Inbox: React.FC = () => {
   const [convertingItem, setConvertingItem] = useState<InboxItem | null>(null);
 
   const loadItems = () => {
-    localProvider.getInboxItems().then(setItems);
+    storage.getInboxItems().then(setItems);
   };
 
   useEffect(() => {
@@ -34,7 +34,7 @@ const Inbox: React.FC = () => {
     );
     
     if (convertingItem) {
-      await localProvider.deleteInboxItem(convertingItem.id);
+      await storage.deleteInboxItem(convertingItem.id);
     }
     
     setIsModalOpen(false);

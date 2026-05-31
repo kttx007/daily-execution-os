@@ -14,7 +14,10 @@ export class FeishuService {
    * @param dueTime 截止时间 (HH:mm)
    */
   static async syncToCalendar(taskTitle: string, planDate: string, dueTime?: string): Promise<boolean> {
-    console.log(`[Feishu] Syncing task "${taskTitle}" to calendar...`);
+    const startStr = dueTime ? `${planDate} ${dueTime}` : `${planDate} 09:00`;
+    const endStr = dueTime ? `${planDate} ${dueTime}` : `${planDate} 10:00`; // 默认 1小时或截止点
+    
+    console.log(`[Feishu] Syncing task "${taskTitle}" (${startStr}) to calendar...`);
     
     try {
       const response = await fetch(`${this.API_BASE}/calendar`, {
@@ -22,13 +25,16 @@ export class FeishuService {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           summary: taskTitle,
-          start_time: dueTime ? `${planDate} ${dueTime}:00` : `${planDate} 09:00:00`,
-          end_time: dueTime ? `${planDate} ${dueTime}:30` : `${planDate} 10:00:00`
+          start_time: startStr,
+          end_time: endStr,
+          description: 'Synced from Daily Execution OS'
         })
       });
-      return response.ok;
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.msg || 'Calendar sync failed');
+      return true;
     } catch (error) {
-      console.error('[Feishu] Calendar sync failed:', error);
+      console.error('[Feishu] Calendar sync error:', error);
       return false;
     }
   }
@@ -46,7 +52,7 @@ export class FeishuService {
     sopLink?: string;
     status: 'Completed' | 'Rolled-over' | 'Abandoned';
   }): Promise<boolean> {
-    console.log('[Feishu] Exporting output log to Bitable...', data);
+    console.log('[Feishu] Exporting to Bitable...', data);
     
     try {
       const response = await fetch(`${this.API_BASE}/bitable`, {
@@ -57,18 +63,21 @@ export class FeishuService {
           tableId: this.TABLE_ID,
           fields: {
             'TaskName': data.taskName,
-            'Date': new Date(data.date).getTime(), // Bitable 日期通常接收毫秒时间戳
+            'Date': new Date(data.date).getTime(),
             'Category': data.category,
             'Priority': data.priority,
             'Duration': data.duration || 0,
-            'SOPLink': data.sopLink ? { text: data.sopLink, link: data.sopLink } : null,
-            'Status': data.status
+            'SOPLink': data.sopLink ? { text: '查看 SOP', link: data.sopLink } : null,
+            'Status': data.status,
+            'SyncTime': new Date().getTime()
           }
         })
       });
-      return response.ok;
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.msg || 'Bitable export failed');
+      return true;
     } catch (error) {
-      console.error('[Feishu] Bitable export failed:', error);
+      console.error('[Feishu] Bitable export error:', error);
       return false;
     }
   }

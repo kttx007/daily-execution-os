@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
-import { localProvider } from '@/services/localStorage';
+import { storage } from '@/services/storageService';
 import { Task, Quadrant } from '@/types';
 import { cn } from '@/lib/utils';
 import { Zap, Target, MessageSquare, Coffee, Plus } from 'lucide-react';
@@ -13,7 +13,7 @@ const Matrix: React.FC = () => {
   const [selectedQuadrant, setSelectedQuadrant] = useState<Quadrant | null>(null);
 
   const loadTasks = async () => {
-    const allTasks = await localProvider.getTasks();
+    const allTasks = await storage.getTasks();
     setTasks(allTasks.filter(t => t.status !== '已完成'));
   };
 

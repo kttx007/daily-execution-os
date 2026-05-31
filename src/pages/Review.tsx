@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/Card';
-import { localProvider } from '@/services/localStorage';
+import { storage } from '@/services/storageService';
 import { Task, OutputLog, DailyReview } from '@/types';
 import { CheckCircle2, ChevronRight, MessageSquare, Star, ArrowRight, Save, LayoutGrid } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -15,10 +15,10 @@ const Review: React.FC = () => {
 
   useEffect(() => {
     const today = new Date().toISOString().split('T')[0];
-    localProvider.getTasks().then(tasks => {
+    storage.getTasks().then(tasks => {
       setCompletedTasks(tasks.filter(t => t.plan_date === today && t.status === '已完成'));
     });
-    localProvider.getOutputLogs().then(logs => {
+    storage.getOutputLogs().then(logs => {
       setLogs(logs.filter(l => l.completed_date === today));
     });
   }, []);
@@ -35,7 +35,7 @@ const Review: React.FC = () => {
       updated_at: new Date().toISOString()
     };
 
-    await localProvider.saveDailyReview(review);
+    await storage.saveDailyReview(review);
     alert('今日复盘已存档，辛苦了！');
     window.location.hash = '#/';
   };

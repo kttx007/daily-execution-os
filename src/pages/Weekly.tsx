@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
-import { localProvider } from '@/services/localStorage';
+import { storage } from '@/services/storageService';
 import { WeeklyTask } from '@/types';
 import { Target, CheckCircle2, Circle, Plus, Calendar, Flag } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -11,7 +11,7 @@ const Weekly: React.FC = () => {
   const [newGoal, setNewGoal] = useState('');
 
   const loadGoals = async () => {
-    const allGoals = await localProvider.getWeeklyTasks();
+    const allGoals = await storage.getWeeklyTasks();
     // 只显示本周目标 (简单处理：显示未完成或最近创建的)
     setGoals(allGoals);
   };
@@ -34,7 +34,7 @@ const Weekly: React.FC = () => {
       updated_at: new Date().toISOString()
     };
 
-    await localProvider.saveWeeklyTask(goal);
+    await storage.saveWeeklyTask(goal);
     setNewGoal('');
     setIsAdding(false);
     loadGoals();

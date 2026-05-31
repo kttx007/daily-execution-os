@@ -1,21 +1,18 @@
 {
   "name": "daily-execution-os",
-  "short_name": "任务中枢",
-  "description": "光衍业务执行中枢 Daily Execution OS",
+  "short_name": "Daily OS",
+  "description": "Daily Execution OS - Task Management Hub",
   "start_url": "/",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#ffffff",
   "theme_color": "#2563eb",
   "icons": [
     {
-      "src": "pwa-192x192.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "pwa-512x512.png",
-      "sizes": "512x512",
-      "type": "image/png"
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
     }
   ]
 }

@@ -27,3 +27,11 @@ export interface StorageProvider {
   getSettings(): Promise<UserSettings | null>;
   saveSettings(settings: UserSettings): Promise<void>;
 }
+
+import { localProvider } from './localStorage';
+import { supabaseProvider } from './supabaseProvider';
+
+// 动态选择 Provider: 如果配置了 Supabase 环境变量则使用 Supabase，否则回退到 LocalStorage
+const useSupabase = import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+export const storage = useSupabase ? supabaseProvider : localProvider;

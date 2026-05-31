@@ -7,6 +7,7 @@ import Matrix from './pages/Matrix';
 import Weekly from './pages/Weekly';
 import Review from './pages/Review';
 import Logs from './pages/Logs';
+import Analytics from './pages/Analytics';
 
 const App: React.FC = () => {
   const [currentPath, setCurrentPath] = useState(window.location.hash || '#/');
@@ -26,6 +27,7 @@ const App: React.FC = () => {
       case '#/weekly': return <Weekly />;
       case '#/review': return <Review />;
       case '#/logs': return <Logs />;
+      case '#/analytics': return <Analytics />;
       default: return <Dashboard />;
     }
   };

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { CheckCircle2, Circle, Clock, ChevronRight, AlertCircle, Plus } from 'lucide-react';
-import { localProvider } from '@/services/localStorage';
+import { storage } from '@/services/storageService';
 import { TaskService } from '@/services/taskService';
 import { Task } from '@/types';
 import { cn } from '@/lib/utils';
@@ -12,11 +12,11 @@ const Today: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
 
-  const loadTasks = () => {
-    localProvider.getTasks().then(tasks => {
-      const today = new Date().toISOString().split('T')[0];
-      setTasks(tasks.filter(t => t.plan_date === today && t.status !== '已完成'));
-    });
+  const loadTasks = async () => {
+    await TaskService.autoRolloverTasks();
+    const tasks = await storage.getTasks();
+    const today = new Date().toISOString().split('T')[0];
+    setTasks(tasks.filter(t => t.plan_date === today && t.status !== '已完成'));
   };
 
   useEffect(() => {
@@ -35,7 +35,7 @@ const Today: React.FC = () => {
 
   const handleSaveTask = async (taskData: Partial<Task>) => {
     if (editingTask) {
-      await localProvider.updateTask(editingTask.id, taskData);
+      await storage.updateTask(editingTask.id, taskData);
     } else {
       await TaskService.createTask(taskData.title!, taskData.priority!, taskData.quadrant!, taskData.category!);
     }
@@ -50,13 +50,13 @@ const Today: React.FC = () => {
 
   return (
     <div className="space-y-6 animate-in slide-in-from-right-4 duration-500 pb-20">
-      <header className="flex justify-between items-end">
+      <header className="flex justify-between items-center sm:items-end">
         <div>
           <div className="flex items-center gap-2 text-primary font-semibold mb-1">
             <Clock size={16} />
-            <span>TODAY EXECUTION</span>
+            <span className="text-xs">TODAY EXECUTION</span>
           </div>
-          <h1 className="text-3xl font-bold tracking-tight">今日执行列表</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">今日执行列表</h1>
         </div>
         <button 
           onClick={handleCreateTask}
