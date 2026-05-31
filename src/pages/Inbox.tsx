@@ -5,10 +5,13 @@ import { storage } from '@/services/storageService';
 import { TaskService } from '@/services/taskService';
 import { InboxItem, Task } from '@/types';
 import TaskModal from '@/components/tasks/TaskModal';
+import InboxItemModal from '@/components/tasks/InboxItemModal';
+import { generateId } from '@/utils/uuid';
 
 const Inbox: React.FC = () => {
   const [items, setItems] = useState<InboxItem[]>([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
+  const [isInboxModalOpen, setIsInboxModalOpen] = useState(false);
   const [convertingItem, setConvertingItem] = useState<InboxItem | null>(null);
 
   const loadItems = () => {
@@ -19,9 +22,29 @@ const Inbox: React.FC = () => {
     loadItems();
   }, []);
 
+  const handleAddItem = () => {
+    setIsInboxModalOpen(true);
+  };
+
+  const handleSaveInboxItem = async (itemData: Partial<InboxItem>) => {
+    const newItem: InboxItem = {
+      id: generateId(),
+      user_id: 'default_user',
+      title: itemData.title!,
+      source: itemData.source || 'Manual',
+      note: itemData.note || '',
+      is_processed: false,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+    await storage.saveInboxItem(newItem);
+    setIsInboxModalOpen(false);
+    loadItems();
+  };
+
   const handleConvertToTask = (item: InboxItem) => {
     setConvertingItem(item);
-    setIsModalOpen(true);
+    setIsTaskModalOpen(true);
   };
 
   const handleSaveTask = async (taskData: Partial<Task>) => {
@@ -30,14 +53,18 @@ const Inbox: React.FC = () => {
       taskData.priority!,
       taskData.quadrant!,
       taskData.category!,
-      { note: taskData.note }
+      { 
+        note: taskData.note,
+        plan_date: taskData.plan_date || new Date().toISOString().split('T')[0],
+        due_time: taskData.due_time
+      }
     );
     
     if (convertingItem) {
       await storage.deleteInboxItem(convertingItem.id);
     }
     
-    setIsModalOpen(false);
+    setIsTaskModalOpen(false);
     setConvertingItem(null);
     loadItems();
   };
@@ -46,7 +73,10 @@ const Inbox: React.FC = () => {
     <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500">
       <header className="flex justify-between items-center">
         <h1 className="text-2xl font-bold tracking-tight">任务收集箱</h1>
-        <button className="bg-primary text-primary-foreground p-2 rounded-full shadow-lg hover:scale-105 transition-transform">
+        <button 
+          onClick={handleAddItem}
+          className="bg-primary text-primary-foreground p-2 rounded-full shadow-lg hover:scale-105 transition-transform"
+        >
           <Plus size={24} />
         </button>
       </header>
@@ -98,10 +128,16 @@ const Inbox: React.FC = () => {
       </div>
 
       <TaskModal
-        isOpen={isModalOpen}
+        isOpen={isTaskModalOpen}
         task={convertingItem ? { title: convertingItem.title, note: convertingItem.note } as Task : null}
-        onClose={() => setIsModalOpen(false)}
+        onClose={() => setIsTaskModalOpen(false)}
         onSave={handleSaveTask}
+      />
+
+      <InboxItemModal
+        isOpen={isInboxModalOpen}
+        onClose={() => setIsInboxModalOpen(false)}
+        onSave={handleSaveInboxItem}
       />
     </div>
   );

@@ -1,6 +1,7 @@
 import { Task, TaskStatus, Quadrant, Priority, Level, OutputLog, Category } from '../types';
 import { storage } from './storageService';
 import { FeishuService } from './feishuService';
+import { generateId } from '../utils/uuid';
 
 export class TaskService {
   static async completeTask(taskId: string): Promise<void> {
@@ -32,7 +33,7 @@ export class TaskService {
     FeishuService.exportToBitable(outputData);
 
     const outputLog: OutputLog = {
-      id: crypto.randomUUID(),
+      id: generateId(),
       user_id: task.user_id,
       task_id: task.id,
       completed_date: outputData.date,
@@ -101,8 +102,10 @@ export class TaskService {
   }
 
   static async createTask(title: string, priority: Priority, quadrant: Quadrant, category: Category, overrides?: Partial<Task>): Promise<Task> {
+    const id = generateId();
+
     const newTask: Task = {
-      id: crypto.randomUUID(),
+      id,
       user_id: 'default_user', // 暂时硬编码
       title,
       priority,
@@ -118,9 +121,17 @@ export class TaskService {
       ...overrides,
     };
 
-    await storage.saveTask(newTask);
+    console.log('[TaskService] Creating task:', newTask);
 
-    // 创建时同步到飞书日历
+    try {
+      await storage.saveTask(newTask);
+      console.log('[TaskService] Task saved successfully');
+    } catch (error) {
+      console.error('[TaskService] Failed to save task:', error);
+      throw error;
+    }
+
+    // 创建时同步到飞书日历 (后台同步)
     FeishuService.syncToCalendar(newTask.title, newTask.plan_date, newTask.due_time);
 
     return newTask;

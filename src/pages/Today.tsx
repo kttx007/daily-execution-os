@@ -34,13 +34,28 @@ const Today: React.FC = () => {
   };
 
   const handleSaveTask = async (taskData: Partial<Task>) => {
-    if (editingTask) {
-      await storage.updateTask(editingTask.id, taskData);
-    } else {
-      await TaskService.createTask(taskData.title!, taskData.priority!, taskData.quadrant!, taskData.category!);
+    try {
+      if (editingTask) {
+        await storage.updateTask(editingTask.id, taskData);
+      } else {
+        await TaskService.createTask(
+          taskData.title!, 
+          taskData.priority!, 
+          taskData.quadrant!, 
+          taskData.category!,
+          {
+            plan_date: taskData.plan_date || new Date().toISOString().split('T')[0],
+            due_time: taskData.due_time,
+            note: taskData.note
+          }
+        );
+      }
+      setIsModalOpen(false);
+      loadTasks();
+    } catch (error) {
+      console.error('Failed to save task:', error);
+      alert('保存失败，请检查控制台日志');
     }
-    setIsModalOpen(false);
-    loadTasks();
   };
 
   const handleToggleComplete = async (taskId: string) => {
