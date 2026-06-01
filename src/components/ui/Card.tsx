@@ -2,7 +2,7 @@ import React from 'react';
 import { cn } from '@/lib/utils';
 
 export const Card = ({ children, className }: { children: React.ReactNode; className?: string }) => (
-  <div className={cn("bg-card text-card-foreground rounded-2xl border shadow-sm", className)}>
+  <div className={cn("bg-card text-card-foreground rounded-[2rem] border border-white/5 shadow-sm overflow-hidden", className)}>
     {children}
   </div>
 );

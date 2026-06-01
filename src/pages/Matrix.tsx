@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { storage } from '@/services/storageService';
 import { Task, Quadrant } from '@/types';
 import { cn } from '@/lib/utils';
-import { Zap, Target, MessageSquare, Coffee, Plus } from 'lucide-react';
+import { Zap, Target, MessageSquare, Coffee, Plus, Grid3X3 } from 'lucide-react';
 import TaskModal from '@/components/tasks/TaskModal';
 import { TaskService } from '@/services/taskService';
 
@@ -81,65 +81,73 @@ const Matrix: React.FC = () => {
   };
 
   return (
-    <div className="h-full space-y-6 animate-in fade-in duration-500">
-      <header className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">四象限执行矩阵</h1>
-          <p className="text-muted-foreground mt-1">
-            平衡长期复利 (Q2) 与短期压力 (Q1) 的决策中心
+    <div className="h-full space-y-10 animate-in fade-in slide-in-from-bottom-8 duration-1000 pb-24 max-w-7xl mx-auto">
+      <header className="flex justify-between items-center bg-white/5 p-8 rounded-[2rem] border border-white/10 glass-card">
+        <div className="space-y-2">
+          <div className="flex items-center gap-2 text-primary font-black tracking-[0.2em]">
+            <Grid3X3 size={16} />
+            <span className="text-[10px] uppercase">Decision Matrix v2.0</span>
+          </div>
+          <h1 className="text-4xl font-black tracking-tighter text-white">执行权重矩阵</h1>
+          <p className="text-muted-foreground text-sm font-medium">
+            平衡长期复利 <span className="text-primary font-bold">(Q2)</span> 与短期压力 <span className="text-red-500 font-bold">(Q1)</span> 的核心中枢。
           </p>
         </div>
       </header>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 h-[calc(100vh-180px)]">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 h-auto lg:h-[calc(100vh-280px)]">
         {matrixConfig.map((config) => (
           <Card key={config.id} className={cn(
-            "flex flex-col border-2 overflow-hidden transition-all",
-            config.borderColor,
-            config.bgColor
+            "flex flex-col border-2 overflow-hidden transition-all duration-500 hover:scale-[1.01] glass-card",
+            config.id === 'Q1' ? "border-red-500/20 bg-red-500/5 shadow-[0_0_50px_rgba(239,68,68,0.05)]" : 
+            config.id === 'Q2' ? "border-primary/20 bg-primary/5 shadow-[0_0_50px_rgba(255,255,255,0.05)]" :
+            "border-white/5 bg-white/[0.02]"
           )}>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <div className="flex items-center gap-3">
-                <div className={cn("p-2 rounded-xl text-white", config.color)}>
-                  <config.icon size={20} />
+            <CardHeader className="flex flex-row items-center justify-between p-8 border-b border-white/5">
+              <div className="flex items-center gap-4">
+                <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center text-white shadow-lg", config.color)}>
+                  <config.icon size={28} />
                 </div>
                 <div>
-                  <CardTitle className="text-lg font-bold">{config.title}</CardTitle>
-                  <p className="text-[10px] font-bold uppercase tracking-wider opacity-60">
+                  <CardTitle className="text-2xl font-black tracking-tighter text-white">{config.title}</CardTitle>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-60">
                     {config.subtitle}
                   </p>
                 </div>
               </div>
               <button 
                 onClick={() => handleAddTask(config.id)}
-                className="p-1.5 hover:bg-background/50 rounded-lg transition-colors"
+                className="w-10 h-10 bg-white/5 hover:bg-white text-muted-foreground hover:text-black rounded-xl transition-all flex items-center justify-center"
               >
-                <Plus size={18} />
+                <Plus size={20} />
               </button>
             </CardHeader>
-            <CardContent className="flex-1 overflow-y-auto p-4 pt-0">
-              <div className="space-y-2">
+            <CardContent className="flex-1 overflow-y-auto no-scrollbar p-8 space-y-4">
+              <div className="grid gap-3">
                 {tasks.filter(t => t.quadrant === config.id).length > 0 ? (
                   tasks.filter(t => t.quadrant === config.id).map(task => (
                     <div 
                       key={task.id}
-                      className="bg-background/60 backdrop-blur-sm p-3 rounded-xl border border-primary/5 shadow-sm flex items-center justify-between group cursor-pointer hover:border-primary/20 transition-all"
+                      className="bg-white/[0.03] backdrop-blur-md p-4 rounded-2xl border border-white/5 flex items-center justify-between group cursor-pointer hover:bg-white/[0.08] hover:border-white/10 transition-all"
                     >
-                      <div className="flex-1 min-w-0 mr-4">
-                        <div className="text-sm font-semibold truncate">{task.title}</div>
-                        <div className="flex items-center gap-2 mt-1">
-                          <span className="text-[9px] font-bold uppercase opacity-50">{task.category}</span>
-                          <span className={cn("text-[9px] font-bold", config.textColor)}>{task.priority}</span>
+                      <div className="flex-1 min-w-0 mr-4 space-y-1">
+                        <div className="text-sm font-bold text-zinc-200 group-hover:text-white transition-colors truncate">{task.title}</div>
+                        <div className="flex items-center gap-3">
+                          <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/40">{task.category}</span>
+                          <span className={cn("text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md bg-white/5", config.textColor)}>
+                            {task.priority}
+                          </span>
                         </div>
                       </div>
-                      <div className="text-[10px] text-muted-foreground whitespace-nowrap">
+                      <div className="text-[10px] font-black tabular-nums text-muted-foreground/30 bg-white/5 px-2 py-1 rounded-md">
                         {task.plan_date.split('-').slice(1).join('/')}
                       </div>
                     </div>
                   ))
                 ) : (
-                  <div className="h-20 flex items-center justify-center text-xs text-muted-foreground/40 italic border border-dashed rounded-xl">
-                    暂无任务
+                  <div className="h-32 flex flex-col items-center justify-center text-[10px] font-black text-muted-foreground/20 uppercase tracking-[0.3em] border-2 border-dashed border-white/5 rounded-3xl">
+                    <Plus size={16} className="mb-2 opacity-20" />
+                    Empty Sector
                   </div>
                 )}
               </div>
