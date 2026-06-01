@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { storage } from '@/services/storageService';
-import { Task } from '@/types';
+import { Task, OutputLog, DailyReview } from '@/types';
 import { CheckCircle2, Star, LayoutGrid, Save, ArrowRight, MessageSquare } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
