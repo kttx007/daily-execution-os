@@ -6,6 +6,7 @@ import Today from './pages/Today';
 import Matrix from './pages/Matrix';
 import Weekly from './pages/Weekly';
 import Review from './pages/Review';
+import Tasks from './pages/Tasks';
 import Logs from './pages/Logs';
 import Analytics from './pages/Analytics';
 
@@ -26,6 +27,7 @@ const App: React.FC = () => {
       case '#/matrix': return <Matrix />;
       case '#/weekly': return <Weekly />;
       case '#/review': return <Review />;
+      case '#/tasks': return <Tasks />;
       case '#/logs': return <Logs />;
       case '#/analytics': return <Analytics />;
       default: return <Dashboard />;

@@ -14,53 +14,66 @@ const Analytics: React.FC = () => {
   if (!report) return <div>Loading reports...</div>;
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500 pb-20">
-      <header>
-        <h1 className="text-3xl font-bold tracking-tight">执行复利分析</h1>
-        <p className="text-muted-foreground mt-1">数据揭示规律，规律产生壁垒。</p>
+    <div className="space-y-12 animate-in fade-in slide-in-from-bottom-8 duration-1000 pb-24 max-w-7xl mx-auto">
+      <header className="flex justify-between items-center bg-white/5 p-8 rounded-[2rem] border border-white/10 glass-card">
+        <div className="space-y-2">
+          <div className="flex items-center gap-2 text-primary font-black tracking-[0.2em]">
+            <BarChart3 size={16} />
+            <span className="text-[10px] uppercase">Intelligence Engine v2.0</span>
+          </div>
+          <h1 className="text-4xl font-black tracking-tighter text-white">执行复利分析</h1>
+          <p className="text-muted-foreground text-sm font-medium">数据揭示规律，规律产生壁垒。</p>
+        </div>
       </header>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="md:col-span-2">
-          <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <TrendingUp size={20} className="text-primary" />
-              本周执行概览 ({report.weekStart} ~ {report.weekEnd})
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <Card className="lg:col-span-2 glass-card relative overflow-hidden group">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 blur-[120px] rounded-full -mr-48 -mt-48 transition-all duration-1000 group-hover:bg-primary/10" />
+          <CardHeader className="p-8 border-b border-white/5 relative z-10">
+            <CardTitle className="text-xl font-black flex items-center gap-3 tracking-tight">
+              <TrendingUp size={24} className="text-emerald-500" />
+              本周执行概览
+              <span className="text-[10px] font-bold text-muted-foreground/40 uppercase ml-auto tracking-widest tabular-nums">
+                {report.weekStart} — {report.weekEnd}
+              </span>
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-8 py-4">
-              <div className="text-center">
-                <div className="text-4xl font-black text-primary">{report.totalCompleted}</div>
-                <div className="text-xs text-muted-foreground mt-2 font-bold uppercase tracking-widest">已完成任务</div>
+          <CardContent className="p-8 relative z-10">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-12 py-6">
+              <div className="space-y-2">
+                <div className="text-6xl font-black text-white tracking-tighter tabular-nums">{report.totalCompleted}</div>
+                <div className="text-[10px] text-muted-foreground font-black uppercase tracking-[0.2em]">已完成任务</div>
               </div>
-              <div className="text-center border-x">
-                <div className="text-4xl font-black">{report.completionRate}%</div>
-                <div className="text-xs text-muted-foreground mt-2 font-bold uppercase tracking-widest">执行完成率</div>
+              <div className="space-y-2 border-l border-white/5 pl-12">
+                <div className="text-6xl font-black text-primary tracking-tighter tabular-nums">{report.completionRate}%</div>
+                <div className="text-[10px] text-muted-foreground font-black uppercase tracking-[0.2em]">执行完成率</div>
               </div>
-              <div className="text-center col-span-2 sm:col-span-1">
-                <div className="text-4xl font-black text-orange-500">{report.stuckInsights.length}</div>
-                <div className="text-xs text-muted-foreground mt-2 font-bold uppercase tracking-widest">停滞事项</div>
+              <div className="space-y-2 border-l border-white/5 pl-12">
+                <div className="text-6xl font-black text-orange-500 tracking-tighter tabular-nums">{report.stuckInsights.length}</div>
+                <div className="text-[10px] text-muted-foreground font-black uppercase tracking-[0.2em]">停滞事项</div>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm font-bold">分类权重分布</CardTitle>
+        <Card className="glass-card">
+          <CardHeader className="p-8 border-b border-white/5">
+            <CardTitle className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">分类权重分布</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="p-8 space-y-6">
             {Object.entries(report.categoryDistribution).map(([cat, count]) => {
               const percentage = Math.round((count / report.totalCompleted) * 100);
               return (
-                <div key={cat} className="space-y-1">
-                  <div className="flex justify-between text-xs font-bold">
-                    <span>{cat}</span>
-                    <span>{percentage}%</span>
+                <div key={cat} className="space-y-2">
+                  <div className="flex justify-between items-end">
+                    <span className="text-xs font-black uppercase tracking-widest text-white">{cat}</span>
+                    <span className="text-[10px] font-bold tabular-nums text-muted-foreground">{percentage}%</span>
                   </div>
-                  <div className="w-full bg-muted rounded-full h-1.5 overflow-hidden">
-                    <div className="bg-primary h-full transition-all" style={{ width: `${percentage}%` }} />
+                  <div className="w-full bg-white/5 rounded-full h-2 overflow-hidden p-0.5 border border-white/5">
+                    <div 
+                      className="bg-primary h-full rounded-full transition-all duration-1000" 
+                      style={{ width: `${percentage}%` }} 
+                    />
                   </div>
                 </div>
               );
@@ -69,41 +82,49 @@ const Analytics: React.FC = () => {
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card className="border-green-500/10">
-          <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <CheckCircle2 size={20} className="text-green-500" />
-              核心产出 (Asset Logs)
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <Card className="glass-card border-emerald-500/20">
+          <CardHeader className="p-8 border-b border-white/5 bg-emerald-500/5">
+            <CardTitle className="text-xl font-black flex items-center gap-3 tracking-tight">
+              <CheckCircle2 size={24} className="text-emerald-500" />
+              核心产出记录
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3">
+          <CardContent className="p-8 space-y-4">
             {report.topOutputs.length > 0 ? report.topOutputs.map(log => (
-              <div key={log.id} className="flex items-center gap-3 p-3 bg-muted/20 rounded-xl border border-dashed">
-                <div className="w-2 h-2 bg-green-500 rounded-full" />
-                <span className="text-sm font-medium">{log.title}</span>
+              <div key={log.id} className="flex items-center gap-4 p-5 bg-white/[0.02] rounded-2xl border border-white/5 hover:bg-white/[0.05] transition-all group cursor-pointer">
+                <div className="w-2 h-2 bg-emerald-500 rounded-full group-hover:scale-150 transition-all shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
+                <span className="text-sm font-bold text-zinc-300 group-hover:text-white transition-colors">{log.title}</span>
               </div>
             )) : (
-              <div className="text-sm text-muted-foreground italic py-10 text-center">本周暂无高价值产出记录</div>
+              <div className="h-48 flex flex-col items-center justify-center rounded-[2rem] border-2 border-dashed border-white/5 bg-white/[0.01]">
+                <div className="text-muted-foreground/30 font-black uppercase tracking-widest">No assets logged</div>
+              </div>
             )}
           </CardContent>
         </Card>
 
-        <Card className="border-destructive/10">
-          <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <AlertCircle size={20} className="text-destructive" />
-              执行卡点 (Stuck Analysis)
+        <Card className="glass-card border-destructive/20">
+          <CardHeader className="p-8 border-b border-white/5 bg-destructive/5">
+            <CardTitle className="text-xl font-black flex items-center gap-3 tracking-tight">
+              <AlertCircle size={24} className="text-destructive" />
+              执行卡点诊断
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3">
+          <CardContent className="p-8 space-y-4">
             {report.stuckInsights.length > 0 ? report.stuckInsights.map((insight, i) => (
-              <div key={i} className="flex items-center gap-3 p-3 bg-destructive/5 rounded-xl border border-destructive/10 text-destructive text-sm font-medium">
-                <AlertCircle size={14} />
-                {insight}
+              <div key={i} className="flex items-start gap-4 p-5 bg-destructive/5 rounded-2xl border border-destructive/10 group">
+                <div className="mt-1 flex-shrink-0">
+                  <AlertCircle size={16} className="text-destructive" />
+                </div>
+                <p className="text-sm font-bold text-destructive/80 leading-relaxed italic">
+                  "{insight}"
+                </p>
               </div>
             )) : (
-              <div className="text-sm text-muted-foreground italic py-10 text-center">本周执行顺畅，无严重卡点</div>
+              <div className="h-48 flex flex-col items-center justify-center rounded-[2rem] border-2 border-dashed border-white/5 bg-white/[0.01]">
+                <div className="text-muted-foreground/30 font-black uppercase tracking-widest">Smooth execution</div>
+              </div>
             )}
           </CardContent>
         </Card>
