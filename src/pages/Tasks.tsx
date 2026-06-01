@@ -33,7 +33,7 @@ const Tasks: React.FC = () => {
     const task = tasks.find(t => t.id === taskId);
     if (!task) return;
     await storage.updateTask(taskId, { 
-      status: task.status === '已完成' ? '待执行' : '已完成',
+      status: task.status === '已完成' ? '未开始' : '已完成',
       completed_at: task.status === '已完成' ? undefined : new Date().toISOString()
     });
     loadTasks();
@@ -51,7 +51,7 @@ const Tasks: React.FC = () => {
         priority: taskData.priority || 'P2',
         quadrant: taskData.quadrant || 'Q2',
         category: taskData.category || 'Work',
-        status: '待执行',
+        status: '未开始',
         delay_count: 0,
         is_stuck: false,
         plan_date: taskData.plan_date || new Date().toISOString().split('T')[0],

@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent } from '@/components/ui/Card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { storage } from '@/services/storageService';
-import { Task, OutputLog, DailyReview } from '@/types';
-import { CheckCircle2, ChevronRight, MessageSquare, Star, ArrowRight, Save, LayoutGrid } from 'lucide-react';
+import { Task } from '@/types';
+import { CheckCircle2, Star, LayoutGrid, Save, ArrowRight, MessageSquare } from 'lucide-react';
 import { cn } from '@/lib/utils';
+
 
 const Review: React.FC = () => {
   const [step, setStep] = useState(1);
