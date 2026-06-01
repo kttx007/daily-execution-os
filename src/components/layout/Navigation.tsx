@@ -13,10 +13,10 @@ const NavItem = ({ icon: Icon, label, active, href }: NavItemProps) => (
   <a
     href={href}
     className={cn(
-      "flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-300",
+      "flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold transition-all duration-300",
       active 
-        ? "bg-primary text-primary-foreground shadow-lg shadow-primary/10 active-glow" 
-        : "text-muted-foreground hover:bg-white/5 hover:text-foreground translate-x-0 hover:translate-x-1"
+        ? "bg-blue-600 text-white shadow-xl shadow-blue-900/40 active-glow" 
+        : "text-slate-400 hover:bg-slate-800/50 hover:text-slate-100 translate-x-0 hover:translate-x-1"
     )}
   >
     <Icon size={18} className={cn(active ? "animate-pulse" : "")} />
@@ -39,19 +39,19 @@ export const Sidebar = ({ currentPath }: { currentPath: string }) => {
   ];
 
   return (
-    <div className="hidden md:flex flex-col h-screen w-72 border-r bg-black/20 backdrop-blur-xl p-6 space-y-4">
-      <div className="flex items-center space-x-3 px-2 py-8">
-        <div className="w-10 h-10 bg-white rounded-2xl flex items-center justify-center rotate-3 shadow-xl">
-          <span className="text-black font-black text-2xl tracking-tighter">D</span>
+    <div className="hidden md:flex flex-col h-screen w-72 border-r border-slate-800/50 bg-[#020617]/80 backdrop-blur-2xl p-6 space-y-4">
+      <div className="flex items-center space-x-3 px-2 py-8 group cursor-pointer">
+        <div className="w-11 h-11 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-[1rem] flex items-center justify-center rotate-3 shadow-2xl group-hover:rotate-0 transition-all duration-500">
+          <span className="text-white font-black text-2xl tracking-tighter">D</span>
         </div>
         <div className="flex flex-col">
-          <span className="text-xl font-black tracking-tighter text-white">DAILY OS</span>
-          <span className="text-[10px] font-bold tracking-[0.2em] text-muted-foreground uppercase opacity-50">Execution Core</span>
+          <span className="text-xl font-bold tracking-tight text-slate-100">Daily OS</span>
+          <span className="text-[10px] font-bold tracking-[0.2em] text-slate-500 uppercase">Execution Hub</span>
         </div>
       </div>
       
-      <div className="flex-1 space-y-1.5 overflow-y-auto no-scrollbar pt-4">
-        <div className="text-[10px] font-bold text-muted-foreground/40 uppercase tracking-widest px-4 mb-3">Workspace</div>
+      <div className="flex-1 space-y-2 overflow-y-auto no-scrollbar pt-4">
+        <div className="text-[10px] font-black text-slate-600 uppercase tracking-widest px-4 mb-4">Workspace</div>
         {navItems.slice(0, 4).map((item) => (
           <NavItem
             key={item.href}
