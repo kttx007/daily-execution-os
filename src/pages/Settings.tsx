@@ -12,18 +12,21 @@ export function Settings({
   actions,
   user,
   login,
+  register,
   logout,
   configured,
 }: {
   data: AppData;
   actions: TaskActions;
   user: User | null;
-  login: (email: string) => Promise<unknown>;
+  login: (email: string, password: string) => Promise<unknown>;
+  register: (email: string, password: string) => Promise<unknown>;
   logout: () => Promise<void>;
   configured: boolean;
 }) {
   const { online } = useSyncStatus();
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [importText, setImportText] = useState("");
   const [busy, setBusy] = useState(false);
   const [authNotice, setAuthNotice] = useState("");
@@ -41,8 +44,14 @@ export function Settings({
 
   async function handleLogin() {
     setAuthNotice("");
-    await login(email);
-    setAuthNotice(`登录邮件已发送到 ${email.trim()}。请打开邮箱，点击 Supabase 发来的登录链接。`);
+    await login(email, password);
+    setAuthNotice("登录成功。现在可以同步电脑和手机数据。");
+  }
+
+  async function handleRegister() {
+    setAuthNotice("");
+    await register(email, password);
+    setAuthNotice("账号已创建。如 Supabase 开启了邮箱确认，请先到邮箱点击确认链接；如已关闭邮箱确认，会直接登录。");
   }
 
   return (
@@ -62,9 +71,11 @@ export function Settings({
               <span>同步模式：{user && configured ? "已开启同账号自动同步" : "本地优先，登录后开启联动"}</span>
             </div>
             {!user ? (
-              <form className="flex gap-2" onSubmit={(event) => { event.preventDefault(); run(handleLogin); }}>
-                <Input type="email" placeholder="邮箱登录 Magic Link" value={email} onChange={(event) => setEmail(event.target.value)} disabled={!configured} />
-                <Button type="submit" disabled={!configured || busy}>{busy ? "发送中" : "登录"}</Button>
+              <form className="grid gap-2 sm:grid-cols-[1fr_1fr_auto_auto]" onSubmit={(event) => { event.preventDefault(); run(handleLogin); }}>
+                <Input type="email" placeholder="邮箱" value={email} onChange={(event) => setEmail(event.target.value)} disabled={!configured} />
+                <Input type="password" placeholder="密码，至少 6 位" value={password} onChange={(event) => setPassword(event.target.value)} disabled={!configured} />
+                <Button type="submit" disabled={!configured || busy}>{busy ? "处理中" : "登录"}</Button>
+                <Button type="button" variant="outline" disabled={!configured || busy} onClick={() => run(handleRegister)}>注册</Button>
               </form>
             ) : (
               <Button variant="outline" onClick={() => run(logout)}>退出登录</Button>

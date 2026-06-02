@@ -94,7 +94,7 @@ export default function App() {
     recurring: <Recurring data={data} actions={actions} />,
     outputs: <OutputLogPage data={data} actions={actions} />,
     review: <Review data={data} actions={actions} />,
-    settings: <Settings data={data} actions={actions} user={auth.user} login={auth.login} logout={auth.logout} configured={auth.configured} />,
+    settings: <Settings data={data} actions={actions} user={auth.user} login={auth.login} register={auth.register} logout={auth.logout} configured={auth.configured} />,
   };
 
   return (

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import type { User } from "@supabase/supabase-js";
-import { getCurrentUser, isSupabaseConfigured, signInWithEmail, signOut, supabase } from "@/services/supabase";
+import { getCurrentUser, isSupabaseConfigured, signInWithPassword, signOut, signUpWithPassword, supabase } from "@/services/supabase";
 
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
@@ -19,11 +19,12 @@ export function useAuth() {
     };
   }, []);
 
-  const login = useCallback(async (email: string) => signInWithEmail(email), []);
+  const login = useCallback(async (email: string, password: string) => signInWithPassword(email, password), []);
+  const register = useCallback(async (email: string, password: string) => signUpWithPassword(email, password), []);
   const logout = useCallback(async () => {
     await signOut();
     setUser(null);
   }, []);
 
-  return { user, loading, login, logout, configured: isSupabaseConfigured };
+  return { user, loading, login, register, logout, configured: isSupabaseConfigured };
 }

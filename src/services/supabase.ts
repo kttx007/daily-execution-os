@@ -25,13 +25,28 @@ export async function getCurrentUser(): Promise<User | null> {
   return session?.user ?? null;
 }
 
-export async function signInWithEmail(email: string) {
-  if (!supabase) throw new Error("Supabase 尚未配置。");
+function normalizeCredentials(email: string, password: string) {
   const normalizedEmail = email.trim();
   if (!normalizedEmail) throw new Error("请输入邮箱地址。");
+  if (password.length < 6) throw new Error("密码至少 6 位。");
+  return { email: normalizedEmail, password };
+}
 
-  const { data, error } = await supabase.auth.signInWithOtp({
-    email: normalizedEmail,
+export async function signInWithPassword(email: string, password: string) {
+  if (!supabase) throw new Error("Supabase 尚未配置。");
+  const credentials = normalizeCredentials(email, password);
+
+  const { data, error } = await supabase.auth.signInWithPassword(credentials);
+  if (error) throw new Error(error.message);
+  return data;
+}
+
+export async function signUpWithPassword(email: string, password: string) {
+  if (!supabase) throw new Error("Supabase 尚未配置。");
+  const credentials = normalizeCredentials(email, password);
+
+  const { data, error } = await supabase.auth.signUp({
+    ...credentials,
     options: {
       emailRedirectTo: window.location.origin,
     },
