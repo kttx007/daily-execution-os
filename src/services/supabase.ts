@@ -27,12 +27,17 @@ export async function getCurrentUser(): Promise<User | null> {
 
 export async function signInWithEmail(email: string) {
   if (!supabase) throw new Error("Supabase 尚未配置。");
-  return supabase.auth.signInWithOtp({
-    email,
+  const normalizedEmail = email.trim();
+  if (!normalizedEmail) throw new Error("请输入邮箱地址。");
+
+  const { data, error } = await supabase.auth.signInWithOtp({
+    email: normalizedEmail,
     options: {
       emailRedirectTo: window.location.origin,
     },
   });
+  if (error) throw new Error(error.message);
+  return data;
 }
 
 export async function signOut() {

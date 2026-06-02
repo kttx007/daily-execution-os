@@ -26,6 +26,7 @@ export function Settings({
   const [email, setEmail] = useState("");
   const [importText, setImportText] = useState("");
   const [busy, setBusy] = useState(false);
+  const [authNotice, setAuthNotice] = useState("");
 
   async function run(action: () => Promise<unknown>) {
     setBusy(true);
@@ -36,6 +37,12 @@ export function Settings({
     } finally {
       setBusy(false);
     }
+  }
+
+  async function handleLogin() {
+    setAuthNotice("");
+    await login(email);
+    setAuthNotice(`登录邮件已发送到 ${email.trim()}。请打开邮箱，点击 Supabase 发来的登录链接。`);
   }
 
   return (
@@ -55,13 +62,15 @@ export function Settings({
               <span>同步模式：{user && configured ? "已开启同账号自动同步" : "本地优先，登录后开启联动"}</span>
             </div>
             {!user ? (
-              <form className="flex gap-2" onSubmit={(event) => { event.preventDefault(); run(() => login(email)); }}>
+              <form className="flex gap-2" onSubmit={(event) => { event.preventDefault(); run(handleLogin); }}>
                 <Input type="email" placeholder="邮箱登录 Magic Link" value={email} onChange={(event) => setEmail(event.target.value)} disabled={!configured} />
-                <Button type="submit" disabled={!configured || busy}>登录</Button>
+                <Button type="submit" disabled={!configured || busy}>{busy ? "发送中" : "登录"}</Button>
               </form>
             ) : (
               <Button variant="outline" onClick={() => run(logout)}>退出登录</Button>
             )}
+            {authNotice && <p className="rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-700">{authNotice}</p>}
+            {!configured && <p className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-700">当前部署缺少 Supabase 环境变量，请在 Vercel 添加后重新部署。</p>}
             <div className="flex flex-wrap gap-2">
               <Button variant="outline" disabled={!user || busy} onClick={() => user && run(() => actions.syncNow(user.id))}>立即合并同步</Button>
               <Button variant="outline" disabled={!user || busy} onClick={() => user && run(() => actions.pushToCloud(user.id))}>仅推送本地到云端</Button>
