@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.env
+.env.local
+*.tsbuildinfo
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+github-upload-ready/
+daily-execution-os-github-upload.zip
+git-meta/
