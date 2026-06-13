@@ -131,3 +131,15 @@ create index if not exists tasks_user_plan_idx on public.tasks (user_id, plan_da
 create index if not exists inbox_user_processed_idx on public.inbox_items (user_id, is_processed);
 create index if not exists output_user_date_idx on public.output_logs (user_id, completed_date);
 create index if not exists review_user_date_idx on public.daily_reviews (user_id, date);
+
+create or replace function public.keepalive()
+returns jsonb
+language sql
+security definer
+set search_path = public
+as $$
+  select jsonb_build_object('ok', true, 'checked_at', now());
+$$;
+
+grant execute on function public.keepalive() to anon;
+grant execute on function public.keepalive() to authenticated;
